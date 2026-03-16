@@ -782,14 +782,7 @@ export default function App() {
     <>
       {/* Google Fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@400;600;700&display=swap');
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#e8f4fd 0%,#f0f9ff 40%,#e0f2fe 100%);min-height:100vh;}
-        select option{font-family:'Plus Jakarta Sans',sans-serif;}
-        @media(max-width:640px){
-          .stat-grid-resp{grid-template-columns:repeat(2,1fr)!important;}
-          .due-sum-resp{grid-template-columns:repeat(2,1fr)!important;}
-        }
+       
       `}</style>
 
       {/* ── NAVBAR ── */}
