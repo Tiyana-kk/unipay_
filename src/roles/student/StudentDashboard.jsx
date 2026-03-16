@@ -1,38 +1,42 @@
 import React, { useState } from "react";
-import StudentLayout from "./StudentLayout";
-import StatCard from "../../components/StatCard";
-import { INITIAL_FEES } from "../../data/feesData";
+import { INITIAL_FEES } from "../../utils/constants";
+import { useWindowWidth } from "../../hooks/useWindowWidth";
 
-function StudentDashboard() {
+import { Navbar } from "../../components/common/Navbar";
+import { ProfileDrawer } from "../../components/common/ProfileDrawer";
+import { PaymentModal } from "../../components/common/PaymentModal";
+import { Toast } from "../../components/common/Toast";
 
-  const paid = INITIAL_FEES.filter(f => f.status === "paid")
-  .reduce((s, f) => s + f.amt, 0);
+import { FeeSection } from "../../components/fees/FeeSection";
+import { HostelSection } from "../../components/hostel/HostelSection";
 
-  const pending = INITIAL_FEES.filter(f => f.status !== "paid")
-  .reduce((s, f) => s + f.amt, 0);
+export default function StudentDashboard() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("fees");
+  const [fees, setFees] = useState(INITIAL_FEES);
+  const [modalData, setModalData] = useState(null);
+  const [toast, setToast] = useState(false);
+
+  const width = useWindowWidth();
 
   return (
-
-    <StudentLayout>
-
-      <h2>Welcome Tiyana</h2>
-
-      <div className="stats">
-
-        <StatCard
-          title="Total Paid"
-          value={`₹${paid}`}
-        />
-
-        <StatCard
-          title="Pending Fees"
-          value={`₹${pending}`}
-        />
-
-      </div>
-
-    </StudentLayout>
+    <>
+      <Navbar />
+      <FeeSection
+        fees={fees}
+        setFees={setFees}
+        setModalData={setModalData}
+      />
+      <HostelSection />
+      <ProfileDrawer
+        open={drawerOpen}
+        setOpen={setDrawerOpen}
+      />
+      <PaymentModal
+        modalData={modalData}
+        setModalData={setModalData}
+      />
+      <Toast show={toast} setShow={setToast} />
+    </>
   );
 }
-
-export default StudentDashboard;

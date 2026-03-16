@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { C } from "../../utils/constants";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 
-export function Login({ onLogin }) {
+export function Login() {
+  const navigate = useNavigate();
   const [role, setRole] = useState("student");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +18,11 @@ export function Login({ onLogin }) {
     // Simulate network delay
     setTimeout(() => {
       setLoading(false);
-      onLogin(role);
+      if (role === "hod") {
+        navigate("/hod/dashboard");
+      } else {
+        navigate("/student/dashboard");
+      }
     }, 1000);
   };
 
