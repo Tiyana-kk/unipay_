@@ -7,13 +7,14 @@ export function ProfileDrawer({ open, onClose }) {
   const w = useWindowWidth();
   const drawerW = w < 480 ? "100vw" : "360px";
   const details = [
-    ["Department","Computer Science"],["Course","B.Tech CSE"],
-    ["Semester","4th Semester"],["Batch","2022 – 2026"],
+    ["KTU ID", "IDK23CS062"], ["Department","Computer Science And Engineering"],
+    ["Course","B.Tech"], ["Semester","6th Semester"],
+    ["Batch","2023 – 2027"]
   ];
   const fullDetails = [
-    ["Email","tiyana.kk@unipay.edu"],
-    ["Hostel","Block B – Room 204"],
-    ["Phone","+91 98765 43210"],
+    ["Email","kktiyana@gmail.com"],
+    ["Hostel","NILA LH "],
+    ["Phone","+91 9037089826"],
   ];
   return (
     <>
@@ -27,7 +28,7 @@ export function ProfileDrawer({ open, onClose }) {
         </div>
         <div style={{ width:64, height:64, borderRadius:14, background:`linear-gradient(135deg,${C.accent},${C.accent2})`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, fontWeight:800, color:"#fff", margin:"0 auto", boxShadow:"0 6px 18px rgba(37,99,235,.25)" }}>TK</div>
         <div style={{ textAlign:"center", fontSize:17, fontWeight:800 }}>TIYANA K K</div>
-        <div style={{ textAlign:"center", fontSize:12, color:C.muted, fontWeight:500 }}>Admission No: ZXX2024CS001</div>
+        <div style={{ textAlign:"center", fontSize:12, color:C.muted, fontWeight:500 }}>Admission No: 10119</div>
         <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:9 }}>
           {details.map(([l,v]) => (
             <div key={l} style={{ background:C.bg, border:`1.5px solid ${C.border}`, borderRadius:10, padding:"11px 13px" }}>

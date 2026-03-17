@@ -3,7 +3,7 @@ import { C } from "../../utils/constants";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 import { GradCap, UserIcon, LogoutIcon } from "../icons";
 
-export function Navbar({ onAvatarClick }) {
+export function Navbar({ onAvatarClick, onLogout }) {
   const w = useWindowWidth();
   const isMobile = w < 640;
   const [hoverAvatar, setHoverAvatar] = useState(false);
@@ -24,7 +24,8 @@ export function Navbar({ onAvatarClick }) {
           {!isMobile && (
             <div style={{ textAlign:"right" }}>
               <div style={{ fontSize:14, fontWeight:700, color:C.text, lineHeight:1.2 }}>TIYANA K K</div>
-              <div style={{ fontSize:11.5, color:C.muted, fontWeight:500 }}>Admission No: ZXX2024CS001</div>
+              <div style={{ fontSize:11.5, color:C.muted, fontWeight:500 }}>Adm No: 10119 | KTUID: IDK23CS062</div>
+              <div style={{ fontSize:10.5, color:C.muted2, fontWeight:500 }}>S6 Computer Science And Engineering</div>
             </div>
           )}
           {/* Avatar */}
@@ -35,14 +36,19 @@ export function Navbar({ onAvatarClick }) {
             <UserIcon />
           </div>
           {/* Logout — icon only on mobile */}
-          <button
-            onMouseEnter={() => setHoverLogout(true)} onMouseLeave={() => setHoverLogout(false)}
-            style={{ display:"flex", alignItems:"center", gap:7, padding:isMobile?"7px 10px":"7px 16px", borderRadius:8, background:hoverLogout?C.accentLight:C.white, border:`1.5px solid ${hoverLogout?C.accent:C.border2}`, color:hoverLogout?C.accent:C.text2, fontWeight:600, fontSize:13, cursor:"pointer", fontFamily:"inherit", transition:"all .2s" }}>
-            <LogoutIcon />
-            {!isMobile && "Logout"}
-          </button>
+         
+<button
+  onClick={onLogout}
+  onMouseEnter={() => setHoverLogout(true)} 
+  onMouseLeave={() => setHoverLogout(false)}
+  style={{ display:"flex", alignItems:"center", gap:7, padding:isMobile?"7px 10px":"7px 16px", borderRadius:8, background:hoverLogout?C.accentLight:C.white, border:`1.5px solid ${hoverLogout?C.accent:C.border2}`, color:hoverLogout?C.accent:C.text2, fontWeight:600, fontSize:13, cursor:"pointer", fontFamily:"inherit", transition:"all .2s" }}
+>
+  <LogoutIcon />
+  {!isMobile && "Logout"}
+</button>
         </div>
       </div>
     </nav>
   );
 }
+

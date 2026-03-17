@@ -9,6 +9,7 @@ function StatusBadge({ status }) {
     paid:    { bg:C.greenBg, color:C.green, border:C.greenBorder, label:"✓ Paid" },
     notpaid: { bg:C.goldBg,  color:C.gold,  border:C.goldBorder,  label:"⏱ Pending" },
     overdue: { bg:C.redBg,   color:C.red,   border:C.redBorder,   label:"⚠ Overdue" },
+    pending_verification: { bg:C.orange + "20", color:C.orange, border:C.orange + "40", label:"⏳ Verifying" }
   }[status] || { bg:C.goldBg, color:C.gold, border:C.goldBorder, label:"—" };
   return (
     <span style={{ display:"inline-flex", alignItems:"center", gap:5, padding:"4px 10px", borderRadius:20, background:cfg.bg, color:cfg.color, border:`1px solid ${cfg.border}`, fontSize:11.5, fontWeight:700, whiteSpace:"nowrap" }}>
@@ -43,7 +44,7 @@ function FeeTableDesktop({ rows, onPayNow }) {
       <table style={{ width:"100%", borderCollapse:"collapse", minWidth:750 }}>
         <thead>
           <tr style={{ borderBottom:`1.5px solid ${C.border}` }}>
-            {["Fee ID","Fee Type","Category","Amount","Published Date","Due Date","Status","Paid Date","Action"].map(h => (
+            {["Fee Type","Category","Amount","Published Date","Due Date","Status","Paid Date","Action"].map(h => (
               <th key={h} style={th}>{h}</th>
             ))}
           </tr>
@@ -65,7 +66,6 @@ function FeeRowDesktop({ f, isLast, onPayNow }) {
   const td = { padding:"13px 14px", verticalAlign:"middle", borderBottom:isLast?"none":`1px solid ${C.border}` };
   return (
     <tr onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)} style={{ background:hov?C.bg:C.white, transition:"background .15s" }}>
-      <td style={td}><span style={{ fontSize:12, fontWeight:700, color:C.muted }}>{f.id}</span></td>
       <td style={td}><span style={{ fontWeight:700, fontSize:13.5, color:C.text }}>{f.type}</span></td>
       <td style={td}><CatPill cat={f.cat} /></td>
       <td style={td}><span style={{ fontSize:14, fontWeight:800, color:C.text }}>{fmtCurrency(f.amt)}</span></td>
@@ -86,7 +86,6 @@ function FeeCardMobile({ f, onPayNow }) {
     <div style={{ background:C.white, border:`1.5px solid ${C.border}`, borderRadius:12, padding:16, display:"flex", flexDirection:"column", gap:10 }}>
       <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:8 }}>
         <div>
-          <div style={{ fontSize:11, fontWeight:700, color:C.muted, marginBottom:3 }}>{f.id}</div>
           <div style={{ fontSize:14, fontWeight:700, color:C.text }}>{f.type}</div>
         </div>
         <StatusBadge status={st} />
