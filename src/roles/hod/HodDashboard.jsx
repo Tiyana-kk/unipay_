@@ -336,7 +336,7 @@ function Modal({ open, title, onClose, children, footer }) {
 /* ─────────────────────────────────────────────
    FEE MANAGEMENT TAB
 ───────────────────────────────────────────── */
-function FeeManagement({ toast }) {
+function FeeManagement({ toast, finesHistory, onAddFines }) {
   const [fineMode, setFineMode]       = useState("individual");
   const [indvSem, setIndvSem]         = useState("");
   const [indvStudent, setIndvStudent] = useState("");
@@ -352,14 +352,14 @@ function FeeManagement({ toast }) {
   const [finesSearch, setFinesSearch] = useState("");
 
   const filteredFines = useMemo(() => {
-    let list = RECENT_FINES;
+    let list = finesHistory;
     if (finesClassFilter) list = list.filter(f => f.sem === finesClassFilter);
     if (finesSearch) {
       const q = finesSearch.toLowerCase();
       list = list.filter(f => f.name.toLowerCase().includes(q) || f.id.toLowerCase().includes(q));
     }
     return list;
-  }, [finesClassFilter, finesSearch]);
+  }, [finesHistory, finesClassFilter, finesSearch]);
 
   const semStudents = useMemo(
     () => ALL_STUDENTS.filter(s => !selSem || s.sem === selSem),
@@ -439,7 +439,26 @@ function FeeManagement({ toast }) {
                 <Input type="text" placeholder="Optional note" value={remark} onChange={e => setRemark(e.target.value)} />
               </FormGroup>
             </div>
-            <Btn onClick={() => { toast("Fine added successfully!", "success"); }}>
+            <Btn onClick={() => {
+              if (!indvSem || !indvStudent || !fineCat || !amount || !dueDate || !remark) {
+                toast("Please fill in all required fields", "error");
+                return;
+              }
+              const student = ALL_STUDENTS.find(s => s.id === indvStudent);
+              const newFine = {
+                id: student.id,
+                name: student.name,
+                sem: student.sem,
+                cat: fineCat,
+                amt: `₹${Number(amount).toLocaleString()}`,
+                due: dueDate || "-",
+                status: "Pending",
+                rawAmount: Number(amount)
+              };
+              onAddFines([newFine]);
+              toast("Fine added successfully!", "success");
+              setAmount(""); setRemark("");
+            }}>
               <Icon.Plus /> Add Fine
             </Btn>
           </div>
@@ -471,7 +490,7 @@ function FeeManagement({ toast }) {
               <thead>
                 <tr>
                   <Th><input type="checkbox" checked={allChecked} onChange={toggleAll} style={{ accentColor:C.sky600 }} /></Th>
-                  <Th>Adm No</Th><Th>Name</Th><Th>Semester</Th><Th>Section</Th>
+                  <Th>Adm No</Th><Th>Name</Th><Th>Semester</Th>
                 </tr>
               </thead>
               <tbody>
@@ -483,14 +502,36 @@ function FeeManagement({ toast }) {
                     <Td style={{ fontSize:".78rem", color:C.slate400 }}>{s.id}</Td>
                     <Td style={{ fontWeight:500 }}>{s.name}</Td>
                     <Td><Chip>{s.sem}</Chip></Td>
-                    <Td>A</Td>
+                  
                   </tr>
                 ))}
               </tbody>
             </TableWrap>
             <div style={{ display:"flex", gap:12, alignItems:"center", marginTop:16, flexWrap:"wrap" }}>
               <span style={{ fontSize:".82rem", color:C.slate500 }}>{selCount} student{selCount !== 1 ? "s" : ""} selected</span>
-              <Btn onClick={() => toast(`Fine added to ${selCount} student(s)!`, "success")}>
+              <Btn onClick={() => {
+                const selectedIds = Object.keys(selected).filter(id => selected[id]);
+                if (!selSem || selectedIds.length === 0 || !fineCat || !amount || !dueDate) {
+                  toast("Please fill in all required fields and select students", "error");
+                  return;
+                }
+                const newFines = selectedIds.map(id => {
+                  const student = ALL_STUDENTS.find(s => s.id === id);
+                  return {
+                    id: student.id,
+                    name: student.name,
+                    sem: student.sem,
+                    cat: fineCat,
+                    amt: `₹${Number(amount).toLocaleString()}`,
+                    due: dueDate || "-",
+                    status: "Pending",
+                    rawAmount: Number(amount)
+                  };
+                });
+                onAddFines(newFines);
+                toast(`Fine added to ${selCount} student(s)!`, "success");
+                setSelected({}); setAmount(""); setRemark("");
+              }}>
                 <Icon.Plus /> Add Fine to Selected
               </Btn>
             </div>
@@ -586,7 +627,27 @@ function FeeManagement({ toast }) {
         footer={
           <>
             <Btn variant="outline" onClick={() => setConfirmOpen(false)}>Cancel</Btn>
-            <Btn variant="danger" onClick={() => { setConfirmOpen(false); toast("Fine applied to entire class!", "success"); }}>
+            <Btn variant="danger" onClick={() => {
+              setConfirmOpen(false);
+              const classStudents = ALL_STUDENTS.filter(s => s.sem === classSem);
+              if (!classSem || !fineCat || !amount || !dueDate || !remark) {
+                toast("Please fill in all required fields", "error");
+                return;
+              }
+              const newFines = classStudents.map(student => ({
+                id: student.id,
+                name: student.name,
+                sem: student.sem,
+                cat: fineCat,
+                amt: `₹${Number(amount).toLocaleString()}`,
+                due: dueDate || "-",
+                status: "Pending",
+                rawAmount: Number(amount)
+              }));
+              onAddFines(newFines);
+              toast("Fine applied to entire class!", "success");
+              setAmount(""); setRemark("");
+            }}>
               Yes, Apply Fine
             </Btn>
           </>
@@ -665,18 +726,18 @@ function FeeCategories() {
 /* ─────────────────────────────────────────────
    DUE SHEET TAB
 ───────────────────────────────────────────── */
-function DueSheet({ toast }) {
+function DueSheet({ toast, dueData }) {
   const [sem,    setSem]    = useState("");
   const [search, setSearch] = useState("");
 
   const rows = useMemo(() => {
     const q = search.toLowerCase();
-    return DUE_DATA.filter(d => {
+    return dueData.filter(d => {
       if (sem && d.sem !== sem) return false;
       if (q && !d.name.toLowerCase().includes(q) && !d.id.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [sem, search]);
+  }, [sem, search, dueData]);
 
   const totalDue    = rows.reduce((a, r) => a + r.total, 0);
   const withDue     = rows.filter(r => r.total > 0).length;
@@ -705,9 +766,7 @@ function DueSheet({ toast }) {
           <Btn variant="outline" size="sm" onClick={() => toast("Downloading due sheet…", "success")}>
             <Icon.Download /> Download
           </Btn>
-          <Btn size="sm" onClick={() => toast("Due sheet published!", "success")}>
-            <Icon.Check /> Publish Due Sheet
-          </Btn>
+
         </div>
       </div>
 
@@ -762,7 +821,18 @@ function DueSheet({ toast }) {
           ))}
           {rows.length > 0 && (
             <tr style={{ background: C.sky50, fontWeight: 700, borderTop: `2px solid ${C.sky200}` }}>
-              <Td colSpan={3} style={{ textAlign:"right", color:C.slate700 }}>Total:</Td>
+              <Td></Td>
+              <Td></Td>
+               <Td
+                style={{
+                  textAlign: "left",
+                  color: C.slate700,
+                  fontSize: "1.2rem",     // increase size (try 1.1rem or 1.2rem if needed)
+                  fontWeight: 800       // makes it more prominent
+                }}
+              >
+                Total:
+              </Td>
               <Td>{fmt(totalTuition)}</Td>
               <Td>{fmt(totalExam)}</Td>
               <Td>{fmt(totalLibrary)}</Td>
@@ -800,12 +870,34 @@ export default function App() {
   const [toastMsg,  setToastMsg]  = useState("");
   const [toastType, setToastType] = useState("");
   const [toastVis,  setToastVis]  = useState(false);
+  const [finesHistory, setFinesHistory] = useState(RECENT_FINES);
+  const [dueData, setDueData] = useState(DUE_DATA);
 
   const navigate = useNavigate();
 
   const toast = (msg, type = "") => {
     setToastMsg(msg); setToastType(type); setToastVis(true);
     setTimeout(() => setToastVis(false), 2800);
+  };
+
+  const handleAddFines = (newFines) => {
+    setFinesHistory(prev => [...newFines, ...prev]);
+    setDueData(prev => {
+      const updated = [...prev];
+      newFines.forEach(f => {
+        const amt = f.rawAmount || Number(f.amt.replace(/[^0-9.-]+/g,""));
+        const idx = updated.findIndex(d => d.id === f.id);
+        if (idx !== -1) {
+          updated[idx] = { ...updated[idx], fine: updated[idx].fine + amt, total: updated[idx].total + amt };
+        } else {
+          updated.push({
+            id: f.id, name: f.name, sem: f.sem,
+            tuition: 0, exam: 0, library: 0, bus: 0, fine: amt, total: amt
+          });
+        }
+      });
+      return updated;
+    });
   };
 
   const tabs = [
@@ -885,9 +977,9 @@ export default function App() {
           ))}
         </div>
 
-        {activeTab === "fee-mgmt"  && <FeeManagement toast={toast} />}
+        {activeTab === "fee-mgmt"  && <FeeManagement toast={toast} finesHistory={finesHistory} onAddFines={handleAddFines} />}
         {activeTab === "fee-cat"   && <FeeCategories />}
-        {activeTab === "due-sheet" && <DueSheet toast={toast} />}
+        {activeTab === "due-sheet" && <DueSheet toast={toast} dueData={dueData} />}
       </div>
 
       <Toast message={toastMsg} type={toastType} visible={toastVis} />
