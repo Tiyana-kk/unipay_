@@ -74,7 +74,9 @@ function FeeRowDesktop({ f, isLast, onPayNow }) {
       <td style={td}><StatusBadge status={st} /></td>
       <td style={td}><span style={{ fontSize:12.5, color:C.text2 }}>{f.paidDate}</span></td>
       <td style={td}>
-        {st==="paid" ? <span style={{ fontSize:12, color:C.muted2 }}>—</span> : <PayNowBtn overdue={st==="overdue"} onClick={() => onPayNow(f.id)} />}
+        {st==="paid" ? <span style={{ fontSize:12, color:C.muted2 }}>—</span> : 
+         f.pendingVerification ? <span style={{ fontSize:12, color:C.muted2, fontWeight:600 }}>Waiting for verification from authority</span> : 
+         <PayNowBtn overdue={st==="overdue"} onClick={() => onPayNow(f.id)} />}
       </td>
     </tr>
   );
@@ -114,9 +116,14 @@ function FeeCardMobile({ f, onPayNow }) {
           </div>
         )}
       </div>
-      {st !== "paid" && (
+      {st !== "paid" && !f.pendingVerification && (
         <div style={{ paddingTop:4 }}>
           <PayNowBtn overdue={st==="overdue"} onClick={() => onPayNow(f.id)} />
+        </div>
+      )}
+      {st !== "paid" && f.pendingVerification && (
+        <div style={{ paddingTop:4, fontSize:12, color:C.muted2, fontWeight:600 }}>
+          Waiting for verification from authority
         </div>
       )}
     </div>

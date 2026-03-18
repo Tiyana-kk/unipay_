@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { INITIAL_FEES } from "../../utils/constants";
 import { useWindowWidth } from "../../hooks/useWindowWidth";
 
@@ -17,6 +18,8 @@ export default function StudentDashboard() {
   const [modalData, setModalData] = useState(null);
   const [toast, setToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
+
+  const navigate = useNavigate();
 
  // const width = useWindowWidth();
 
@@ -37,8 +40,9 @@ export default function StudentDashboard() {
       if(f.id === modalData.id) {
         return { 
           ...f, 
-          status: receiptData ? "pending_verification" : "paid", 
-          paidDate: "Just Now" 
+          status: receiptData ? f.status : "paid", 
+          pendingVerification: !!receiptData,
+          paidDate: receiptData ? f.paidDate : "Just Now" 
         };
       }
       return f;
@@ -50,7 +54,7 @@ export default function StudentDashboard() {
 
   return (
     <>
-      <Navbar onAvatarClick={() => setDrawerOpen(true)} />
+      <Navbar onAvatarClick={() => setDrawerOpen(true)} onLogout={() => { setToastMsg("Logged out"); setToast(true); setTimeout(() => navigate("/login"), 800); }} />
       <FeeSection
         fees={fees}
         onPayNow={handlePayNow}

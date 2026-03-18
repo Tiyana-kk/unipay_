@@ -1,19 +1,20 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* ─────────────────────────────────────────────
    MOCK DATA
 ───────────────────────────────────────────── */
 const ALL_STUDENTS = [
-  { id: "STU2024001", name: "Aditya Sharma",    sem: "S8" },
-  { id: "STU2024002", name: "Bhavna Iyer",       sem: "S8" },
-  { id: "STU2024003", name: "Chetan Reddy",      sem: "S8" },
-  { id: "STU2024004", name: "Divya Nambiar",     sem: "S8" },
-  { id: "STU2024005", name: "Eshan Tiwari",      sem: "S8" },
-  { id: "STU2024011", name: "Farhan Shaikh",     sem: "S6" },
-  { id: "STU2024012", name: "Gayatri Pillai",    sem: "S6" },
-  { id: "STU2024013", name: "Harsh Patel",       sem: "S6" },
-  { id: "STU2024014", name: "Ishita Roy",        sem: "S6" },
-  { id: "STU2024015", name: "Jai Khandelwal",   sem: "S6" },
+  { id: "IDK22CS001", name: "Aditya Sharma",    sem: "S8" },
+  { id: "IDK22CS002", name: "Bhavna Iyer",       sem: "S8" },
+  { id: "IDK22CS003", name: "Chetan Reddy",      sem: "S8" },
+  { id: "IDK22CS004", name: "Divya Nambiar",     sem: "S8" },
+  { id: "IDK22CS005", name: "Eshan Tiwari",      sem: "S8" },
+  { id: "IDK22CS006", name: "Farhan Shaikh",     sem: "S6" },
+  { id: "IDK22CS007", name: "Gayatri Pillai",    sem: "S6" },
+  { id: "IDK22CS008", name: "Harsh Patel",       sem: "S6" },
+  { id: "IDK22CS009", name: "Ishita Roy",        sem: "S6" },
+  { id: "IDK22CS010", name: "Jai Khandelwal",   sem: "S6" },
   { id: "STU2024021", name: "Kavya Menon",       sem: "S4" },
   { id: "STU2024022", name: "Lokesh Bose",       sem: "S4" },
   { id: "STU2024023", name: "Meera Varma",       sem: "S4" },
@@ -28,8 +29,6 @@ const ALL_STUDENTS = [
 
 const FEE_DATA = {
   S8: [
-    { cat: "Tuition fee",    amount: "₹47,000", due: "2025-08-31", status: "Published", remark: "Core academic fee" },
-    { cat: "Exam fee",       amount: "₹2,200",  due: "2025-09-15", status: "Published", remark: "Theory & Practical" },
     { cat: "Library fee",   amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
     { cat: "Project fee",    amount: "₹5,000",  due: "2025-10-01", status: "Published", remark: "Final year project" },
     { cat: "Placement fee",  amount: "₹1,500",  due: "2025-09-30", status: "Published", remark: "Training & placement" },
@@ -37,23 +36,19 @@ const FEE_DATA = {
     { cat: "Bus fee",        amount: "₹12,000", due: "2025-08-25", status: "Published", remark: "Optional transport" },
   ],
   S6: [
-    { cat: "Tuition fee",  amount: "₹44,000", due: "2025-08-31", status: "Published", remark: "Core academic fee" },
-    { cat: "Exam fee",     amount: "₹2,200",  due: "2025-09-15", status: "Published", remark: "Theory & Practical" },
-    { cat: "Library fee", amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
+   { cat: "Library fee", amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
     { cat: "Lab fee",      amount: "₹3,500",  due: "2025-09-01", status: "Published", remark: "Lab consumables" },
     { cat: "Bus fee",      amount: "₹12,000", due: "2025-08-25", status: "Published", remark: "Optional transport" },
   ],
   S4: [
-    { cat: "Tuition fee",  amount: "₹42,000", due: "2025-08-31", status: "Published", remark: "Core academic fee" },
-    { cat: "Exam fee",     amount: "₹2,000",  due: "2025-09-15", status: "Published", remark: "Theory & Practical" },
     { cat: "Library fee", amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
+    { cat: "Lab fee",      amount: "₹3,500",  due: "2025-09-01", status: "Published", remark: "Lab consumables" },
     { cat: "Bus fee",      amount: "₹12,000", due: "2025-08-25", status: "Pending",   remark: "Optional transport" },
   ],
   S2: [
-    { cat: "Tuition fee",  amount: "₹40,000", due: "2025-08-31", status: "Published", remark: "Core academic fee" },
-    { cat: "Exam fee",     amount: "₹1,800",  due: "2025-09-15", status: "Published", remark: "Theory & Practical" },
-    { cat: "Library fee", amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
-    { cat: "Bus fee",      amount: "₹12,000", due: "2025-08-25", status: "Published", remark: "Optional transport" },
+   { cat: "Library fee", amount: "₹800",    due: "2025-08-31", status: "Published", remark: "Annual access" },
+    { cat: "Lab fee",      amount: "₹3,500",  due: "2025-09-01", status: "Published", remark: "Lab consumables" },
+   { cat: "Bus fee",      amount: "₹12,000", due: "2025-08-25", status: "Published", remark: "Optional transport" },
   ],
 };
 
@@ -88,7 +83,7 @@ const RECENT_FINES = [
 ];
 
 const SEMS = ["S2", "S4", "S6", "S8"];
-const FINE_CATS = ["Library Fine", "Late Fee", "Lab Damage", "Disciplinary Fine", "Other"];
+const FINE_CATS = ["Dept.Library Fine", "Late Fee", "Lab Damage", "Disciplinary Fine", "Other"];
 
 /* ─────────────────────────────────────────────
    STYLE CONSTANTS  (inline style objects)
@@ -353,6 +348,18 @@ function FeeManagement({ toast }) {
   const [dueDate, setDueDate]         = useState("");
   const [remark, setRemark]           = useState("");
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [finesClassFilter, setFinesClassFilter] = useState("");
+  const [finesSearch, setFinesSearch] = useState("");
+
+  const filteredFines = useMemo(() => {
+    let list = RECENT_FINES;
+    if (finesClassFilter) list = list.filter(f => f.sem === finesClassFilter);
+    if (finesSearch) {
+      const q = finesSearch.toLowerCase();
+      list = list.filter(f => f.name.toLowerCase().includes(q) || f.id.toLowerCase().includes(q));
+    }
+    return list;
+  }, [finesClassFilter, finesSearch]);
 
   const semStudents = useMemo(
     () => ALL_STUDENTS.filter(s => !selSem || s.sem === selSem),
@@ -391,7 +398,7 @@ function FeeManagement({ toast }) {
     <>
       <Card>
         <div style={{ marginBottom:20 }}>
-          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:"1.15rem", fontWeight:700, marginBottom:4 }}>Add Fine / Penalty</h2>
+          <h2 style={{ fontFamily:"'Sora',sans-serif", fontSize:"1.15rem", fontWeight:700, marginBottom:4 }}>Add Fine / Fees</h2>
           <p style={{ fontSize:".82rem", color:C.slate500 }}>Assign fines to individual students, selected students, or an entire class</p>
         </div>
 
@@ -534,10 +541,17 @@ function FeeManagement({ toast }) {
       <Card style={{ marginTop:20 }}>
         <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:10 }}>
           <div>
-            <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:"1rem", fontWeight:700 }}>Recent Fines</h3>
-            <p style={{ fontSize:".78rem", color:C.slate500, marginTop:2 }}>Last 10 fine entries across all classes</p>
+            <h3 style={{ fontFamily:"'Sora',sans-serif", fontSize:"1rem", fontWeight:700 }}>Fines Added</h3>
+            <p style={{ fontSize:".78rem", color:C.slate500, marginTop:2 }}>All generated fines and fees</p>
           </div>
-          <Btn variant="outline" size="sm" onClick={() => toast("Downloading…", "success")}><Icon.Download /> Download</Btn>
+          <div style={{ display:"flex", gap:10, flexWrap:"wrap", alignItems:"center" }}>
+            <Select value={finesClassFilter} onChange={e => setFinesClassFilter(e.target.value)} style={{ width:140, padding:"6px 10px", fontSize:".8rem" }}>
+              <option value="">All Classes</option>
+              {SEMS.map(s => <option key={s}>{s}</option>)}
+            </Select>
+            <Input type="text" placeholder="Search name or ID..." value={finesSearch} onChange={e => setFinesSearch(e.target.value)} style={{ width:180, padding:"6px 10px", fontSize:".8rem" }} />
+            <Btn variant="outline" size="sm" onClick={() => toast("Downloading…", "success")}><Icon.Download /> Download</Btn>
+          </div>
         </div>
         <TableWrap>
           <thead>
@@ -547,7 +561,9 @@ function FeeManagement({ toast }) {
             </tr>
           </thead>
           <tbody>
-            {RECENT_FINES.map((r, i) => (
+            {filteredFines.length === 0 ? (
+              <tr><td colSpan={7} style={{ textAlign:"center", padding:32, color:C.slate400 }}>No fines found</td></tr>
+            ) : filteredFines.map((r, i) => (
               <tr key={i}>
                 <Td style={{ fontSize:".78rem", color:C.slate400 }}>{r.id}</Td>
                 <Td style={{ fontWeight:500 }}>{r.name}</Td>
@@ -667,6 +683,13 @@ function DueSheet({ toast }) {
   const clearCount  = rows.length - withDue;
   const rate        = rows.length ? Math.round((clearCount / rows.length) * 100) : 0;
 
+  const totalTuition = rows.reduce((a, r) => a + r.tuition, 0);
+  const totalExam = rows.reduce((a, r) => a + r.exam, 0);
+  const totalLibrary = rows.reduce((a, r) => a + r.library, 0);
+  const totalBus = rows.reduce((a, r) => a + r.bus, 0);
+  const totalFineAmt = rows.reduce((a, r) => a + r.fine, 0);
+  const totalAllRows = rows.reduce((a, r) => a + r.total, 0);
+
   const fmt = v => v
     ? <span style={{ color:C.red500, fontWeight:700 }}>₹{v.toLocaleString()}</span>
     : <span style={{ color:C.slate400 }}>—</span>;
@@ -737,6 +760,17 @@ function DueSheet({ toast }) {
               </Td>
             </tr>
           ))}
+          {rows.length > 0 && (
+            <tr style={{ background: C.sky50, fontWeight: 700, borderTop: `2px solid ${C.sky200}` }}>
+              <Td colSpan={3} style={{ textAlign:"right", color:C.slate700 }}>Total:</Td>
+              <Td>{fmt(totalTuition)}</Td>
+              <Td>{fmt(totalExam)}</Td>
+              <Td>{fmt(totalLibrary)}</Td>
+              <Td>{fmt(totalBus)}</Td>
+              <Td>{fmt(totalFineAmt)}</Td>
+              <Td><strong style={{ color: totalAllRows ? C.red500 : C.slate400 }}>{totalAllRows ? `₹${totalAllRows.toLocaleString()}` : "—"}</strong></Td>
+            </tr>
+          )}
         </tbody>
       </TableWrap>
 
@@ -766,6 +800,8 @@ export default function App() {
   const [toastMsg,  setToastMsg]  = useState("");
   const [toastType, setToastType] = useState("");
   const [toastVis,  setToastVis]  = useState(false);
+
+  const navigate = useNavigate();
 
   const toast = (msg, type = "") => {
     setToastMsg(msg); setToastType(type); setToastVis(true);
@@ -807,7 +843,7 @@ export default function App() {
             <Icon.User />
           </div>
           <button
-            onClick={() => toast("Logged out", "success")}
+            onClick={() => { toast("Logged out", "success"); setTimeout(() => navigate("/login"), 800); }}
             style={{
               display:"flex", alignItems:"center", gap:6, background:"none",
               border:`1px solid ${C.slate200}`, borderRadius:8, padding:"6px 14px",
